@@ -163,66 +163,70 @@ public:
         while (w2.size() < w1.size()) w2 = "0" + w2;
         
         // attempt one did not work. lets try this again !
-        std::string full1 = w1 + d1;
-        std::string full2 = w2 + d2;
+        std::string full1 = w1 + d1; //
+        std::string full2 = w2 + d2; // this is just padding/formatting to make their sizes match. combines the previous steps
         
-        bool resultNegative = false;
-        std::string result;
+        bool resultNegative = false; // initializes some values
+        std::string result; // same
 
         // Determine how to handle sign
-        if (isNegative == other.isNegative) {
-            // Same sign → Add
-            int carry = 0;
-            for (int i = full1.size() - 1; i >= 0; --i) {
-                int sum = (full1[i] - '0') + (full2[i] - '0') + carry;
-                carry = sum / 10;
-                result = char((sum % 10) + '0') + result;
-            }
-            if (carry > 0) result = char(carry + '0') + result;
+        if (isNegative == other.isNegative) { // if they both have the same sign, we add their magintudes - gpt
+            // Same sign → Add HOW DID SHE MAKE THAT ARROW CHARACTER IT IS SO CUTE
+            int carry = 0; // carry out
+            for (int i = full1.size() - 1; i >= 0; --i) { // addition path, "element wise addition from the right to the left"
+                int sum = (full1[i] - '0') + (full2[i] - '0') + carry; // above
+                carry = sum / 10; // above
+                result = char((sum % 10) + '0') + result; // above
+            } // explained above
+            if (carry > 0) result = char(carry + '0') + result; // handles the carry out
             resultNegative = isNegative; // same as both
-        } else {
+        } else { // subtraction path
             // Different sign → Subtract smaller from larger
-            bool firstIsBigger = full1 >= full2;
-            std::string bigger = firstIsBigger ? full1 : full2;
-            std::string smaller = firstIsBigger ? full2 : full1;
+            bool firstIsBigger = full1 >= full2; // decide which value is larger
+            std::string bigger = firstIsBigger ? full1 : full2; //
+            std::string smaller = firstIsBigger ? full2 : full1; //
 
-            int borrow = 0;
-            for (int i = bigger.size() - 1; i >= 0; --i) {
+            int borrow = 0; // same as carryout
+            for (int i = bigger.size() - 1; i >= 0; --i) { // process is called "paper subtraction"
                 int top = (bigger[i] - '0') - borrow;
                 int bottom = (smaller[i] - '0');
-
-                if (top < bottom) {
-                    top += 10;
-                    borrow = 1;
-                } else {
-                    borrow = 0;
+                // determines a value
+                if (top < bottom) { // decides if there needs to be a borrow
+                    top += 10; //
+                    borrow = 1; //
+                } else { // if borrow is un needed
+                    borrow = 0; ; // we set it to zero
                 }
 
-                result = char((top - bottom) + '0') + result;
+                result = char((top - bottom) + '0') + result; // combines the conitues
             }
 
             resultNegative = firstIsBigger ? isNegative : other.isNegative;
+            // used for tracking the sign of the result
         }
 
         // Split result back into whole/decimal -gpt
-        int decimalLength = std::max(d1.size(), d2.size());
-        std::string resultWhole = result.substr(0, result.size() - decimalLength);
-        std::string resultDecimal = result.substr(result.size() - decimalLength);
+        int decimalLength = std::max(d1.size(), d2.size()); // below
+        std::string resultWhole = result.substr(0, result.size() - decimalLength); // below
+        std::string resultDecimal = result.substr(result.size() - decimalLength); // below
+        // combines back into decimals and whole numbers
 
         // Trim leading zeros in whole -gpt
-        resultWhole.erase(0, resultWhole.find_first_not_of('0'));
-        if (resultWhole.empty()) resultWhole = "0";
+        resultWhole.erase(0, resultWhole.find_first_not_of('0')); //
+        if (resultWhole.empty()) resultWhole = "0"; //
+        // gets rid of leading 0s if there are any
 
         // Trim trailing zeros in decimal -gpt
-        while (!resultDecimal.empty() && resultDecimal.back() == '0') {
-            resultDecimal.pop_back();
-        }
+        while (!resultDecimal.empty() && resultDecimal.back() == '0') { //
+            resultDecimal.pop_back(); //
+        } // gets rid of trailing zeros
 
         // Build final result -gpt
         std::string finalResult = (resultNegative && resultWhole != "0" ? "-" : "") + resultWhole;
         if (!resultDecimal.empty()) {
             finalResult += "." + resultDecimal;
-        }
+        } // combines the final results, reinserts the period before handing it off
+    
 
         return finalResult; // hands the finished object back - gpt
         }
